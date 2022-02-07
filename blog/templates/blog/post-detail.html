@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %} 
+    My Blog
+{% endblock %}
+
+{% block css_files %} 
+<link rel="stylesheet" href="{% static 'blog/post-detail.css' %}">
+{% endblock %}
+
+{% block content %}
+
+
+{% if form_comment.errors %}
+    <div id="alert" style="background-color: black; color: white; margin-top: 20px;">
+        <h2>Saving the comment failed</h2>
+        <p>Please check the comment form below the post and fix your errors </p>
+        <a href="#comment-form">Fix</a>
+    </div>
+  
+{% endif %}
+    
+<section id="summary">
+    <h2>Post Title</h2>
+    <article>
+        <img src="{{ post.image.url }}" alt="Post Title">
+        <address><a href="mailto: {{ post.author.email }}"> By Abdifatah </a></address>
+        <div>
+            Last updated on <time>{{ post.date }}</time>
+        </div>
+    </article>
+</section>
+
+<main>
+    <div>{{ post.content|linebreaks }}</div>
+</main>
+
+<section id="comments">
+    <ul>
+        {% for comment in comments %}
+            <li>
+                <h2>{{ comment.username }}</h2>
+                <p>{{ comment.text|linebreaks }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+</section>
+<section id="comment-form">
+    <h1>Your Comment</h1>
+    <hr style="margin-bottom: 50px;">
+    <form action="{% url 'post-detail-page' post.slug %}" method="POST">
+        {% csrf_token %}
+        {% for form_field in form_comment  %}
+            <div class="form-control {% if form_field.errors%} invalid {% endif %}">
+                {{ form_field.label_tag }}
+                {{ form_field }}
+                {{ form_field.errors }}   
+            </div>
+        {% endfor %}
+        <button >Save Comment</button>
+    </form>
+</section>
+
+    
+{% endblock %}
